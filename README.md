@@ -1,0 +1,102 @@
+# 🇹🇭 Thai-Chinese TTS Web App 🇨🇳
+
+A web application that translates Thai text to Chinese and generates speech using Microsoft Edge TTS.
+
+![Python](https://img.shields.io/badge/Python-3.9+-blue.svg)
+![Flask](https://img.shields.io/badge/Flask-2.3-green.svg)
+![Docker](https://img.shields.io/badge/Docker-Ready-blue.svg)
+
+## ✨ Features
+
+- **Hybrid Translation**: Uses `googletrans` (fast) with `deep-translator` fallback (reliable)
+- **Text-to-Speech**: Microsoft Edge TTS with 6 Chinese voice options
+- **Modern UI**: Clean, responsive web interface
+- **Docker Ready**: Run anywhere without environment setup
+
+## 🚀 Quick Start
+
+### Using Docker (Recommended)
+
+```bash
+# Clone the repository
+git clone https://github.com/n301ix/TTS-Web-App.git
+cd TTS-Web-App
+
+# Build and run
+docker-compose up --build
+```
+
+Open http://localhost:5000 in your browser.
+
+### Local Development
+
+```bash
+# Clone the repository
+git clone https://github.com/n301ix/TTS-Web-App.git
+cd TTS-Web-App
+
+# Install dependencies
+pip install -r requirements.txt
+
+# Run the application
+python app.py
+```
+
+## 📁 Project Structure
+
+```
+TTS-Web-App/
+├── app.py                  # Flask application
+├── translation_service.py  # Hybrid translation logic
+├── tts_service.py          # Edge TTS integration
+├── requirements.txt        # Python dependencies
+├── Dockerfile              # Container definition
+├── docker-compose.yml      # Service orchestration
+├── templates/
+│   └── index.html          # Main UI template
+└── static/
+    ├── style.css           # Styling
+    └── script.js           # Frontend logic
+```
+
+## 🔧 Configuration
+
+### Available Voices
+
+| ID | Voice Name | Description |
+|----|------------|-------------|
+| 1 | Xiaoxiao | Female - Warm |
+| 2 | Xiaoyi | Female - Lively |
+| 3 | Yunxia | Female - Cute |
+| 4 | Yunxi | Male - Sunshine |
+| 5 | Yunjian | Male - Passionate |
+| 6 | Yunyang | Male - Professional |
+
+## 🐳 Docker Hub
+
+Pull the pre-built image:
+
+```bash
+docker pull n301ix/tts-webapp:latest
+docker run -p 5000:5000 n301ix/tts-webapp:latest
+```
+
+## 📝 API Endpoints
+
+| Endpoint | Method | Description |
+|----------|--------|-------------|
+| `/` | GET | Main web interface |
+| `/api/voices` | GET | List available voices |
+| `/api/convert` | POST | Convert Thai text to Chinese speech |
+
+## 🤝 Contributing
+
+1. Fork the repository
+2. Create your feature branch (`git checkout -b feature/amazing-feature`)
+3. Commit your changes (`git commit -m 'Add amazing feature'`)
+4. Push to the branch (`git push origin feature/amazing-feature`)
+5. Open a Pull Request
+
+## 📄 License
+
+This project is open source and available under the MIT License.

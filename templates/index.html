@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Thai-Chinese TTS Converter</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <!-- Google Fonts for modern look -->
+    <link
+        href="https://fonts.googleapis.com/css2?family=Sarabun:wght@400;500;700&family=Noto+Sans+SC:wght@400;500;700&display=swap"
+        rel="stylesheet">
+</head>
+
+<body>
+    <div class="container">
+        <header>
+            <h1>🇹🇭 TH <span class="arrow">→</span> CN 🇨🇳</h1>
+            <p class="subtitle">Smart Translation & Speech Synthesis</p>
+        </header>
+
+        <main>
+            <div class="card input-section">
+                <div class="label-group">
+                    <label for="thai-input">Thai Text Input</label>
+                    <span class="hint">Type or paste Thai text here</span>
+                </div>
+                <textarea id="thai-input" placeholder="พิมพ์ข้อความภาษาไทยที่นี่..."></textarea>
+
+                <div class="controls">
+                    <div class="voice-selector">
+                        <label for="voice-select">Voice Tone</label>
+                        <select id="voice-select">
+                            <option value="" disabled selected>Loading voices...</option>
+                        </select>
+                    </div>
+                </div>
+
+                <button id="convert-btn" onclick="convert()">
+                    <span class="btn-text">แปลงเป็นเสียง</span>
+                    <span class="loader hidden"></span>
+                </button>
+            </div>
+
+            <div id="result-section" class="card result-section hidden">
+                <div class="result-group">
+                    <h3>Chinese Translation</h3>
+                    <p id="chinese-output" class="chinese-text"></p>
+                    <div class="meta-info">
+                        <span id="translator-info" class="badge"></span>
+                    </div>
+                </div>
+
+                <div class="audio-group">
+                    <h3>Audio Output</h3>
+                    <audio id="audio-player" controls>
+                        Your browser does not support the audio element.
+                    </audio>
+                    <a id="download-link" href="#" class="btn-download hidden" download>
+                        ⬇ Download MP3
+                    </a>
+                </div>
+            </div>
+        </main>
+
+        <footer>
+            <p>Powered by Hybrid Translation & Edge TTS</p>
+        </footer>
+    </div>
+
+    <script src="{{ url_for('static', filename='script.js') }}"></script>
+</body>
+
+</html>

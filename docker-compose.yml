@@ -1,0 +1,13 @@
+version: '3.8'
+
+services:
+  tts-webapp:
+    build: .
+    image: tts-webapp
+    container_name: tts-webapp
+    ports:
+      - "5000:5000"
+    volumes:
+      - .:/app
+    environment:
+      - FLASK_ENV=development
