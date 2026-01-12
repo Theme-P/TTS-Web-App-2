@@ -20,24 +20,18 @@ class TranslationService:
         self._deep_translator = GoogleTranslator(source='th', target='zh-CN')
         self._executor = concurrent.futures.ThreadPoolExecutor(max_workers=1)
         self._future: Optional[concurrent.futures.Future] = None
-        # Googletrans translator instantiation
-        self._google_translator = Translator()
 
     def _translate_google_sync(self, text: str) -> str:
         """
-        Wrapper to run async googletrans synchronously.
-        Creates a new event loop for this thread if needed.
+        Wrapper to run googletrans synchronously.
         """
-        async def _async_translate():
-            result = await self._google_translator.translate(text, src='th', dest='zh-cn')
-            return result.text
-
         try:
-            return asyncio.run(_async_translate())
-        except RuntimeError:
-            # If a loop is already running (unlikely in threadpool but possible), use it
-            loop = asyncio.get_event_loop()
-            return loop.run_until_complete(_async_translate())
+            # Instantiate here to avoid thread safety issues
+            translator = Translator()
+            result = translator.translate(text, src='th', dest='zh-cn')
+            return result.text
+        except Exception as e:
+            raise RuntimeError(f"Googletrans error: {str(e)}")
 
     def translate(self, text: str) -> Tuple[str, str]:
         """

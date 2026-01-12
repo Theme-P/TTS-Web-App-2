@@ -1,32 +1,21 @@
 document.addEventListener('DOMContentLoaded', () => {
-    loadVoices();
+    initSpeedSlider();
 });
 
-// Load available voices from backend
-async function loadVoices() {
-    try {
-        const response = await fetch('/api/voices');
-        const voices = await response.json();
+// Initialize speed slider
+function initSpeedSlider() {
+    const slider = document.getElementById('speed-slider');
+    const display = document.getElementById('speed-display');
 
-        const select = document.getElementById('voice-select');
-        select.innerHTML = ''; // Clear loading
-
-        voices.forEach(voice => {
-            const option = document.createElement('option');
-            option.value = voice.id;
-            option.textContent = voice.label;
-            select.appendChild(option);
-        });
-    } catch (error) {
-        console.error('Failed to load voices:', error);
-        document.getElementById('voice-select').innerHTML = '<option>Error loading voices</option>';
-    }
+    slider.addEventListener('input', () => {
+        display.textContent = `${slider.value}x`;
+    });
 }
 
 // Handle conversion process
 async function convert() {
     const thaiText = document.getElementById('thai-input').value.trim();
-    const voiceChoice = document.getElementById('voice-select').value;
+    const speed = document.getElementById('speed-slider').value;
     const btn = document.getElementById('convert-btn');
     const btnText = btn.querySelector('.btn-text');
     const loader = btn.querySelector('.loader');
@@ -52,7 +41,7 @@ async function convert() {
             },
             body: JSON.stringify({
                 text: thaiText,
-                voice: voiceChoice
+                speed: parseFloat(speed)
             })
         });
 
@@ -65,6 +54,7 @@ async function convert() {
         // Display Results
         document.getElementById('chinese-output').textContent = data.chinese;
         document.getElementById('translator-info').textContent = `Translated via ${data.translator}`;
+        document.getElementById('tts-info').textContent = `TTS: ${data.tts_engine}`;
 
         const audioPlayer = document.getElementById('audio-player');
         audioPlayer.src = data.audio_url;
@@ -73,7 +63,7 @@ async function convert() {
         // Update download link
         const downloadLink = document.getElementById('download-link');
         downloadLink.href = data.audio_url;
-        downloadLink.download = `tts_output_${new Date().getTime()}.mp3`;
+        downloadLink.download = `tts_output_${new Date().getTime()}.wav`;
         downloadLink.classList.remove('hidden');
 
         // Show result section with smooth animation

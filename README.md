@@ -19,7 +19,7 @@ A web application that translates Thai text to Chinese and generates speech usin
 
 ```bash
 # Clone the repository
-git clone https://github.com/n301ix/TTS-Web-App.git
+git clone https://github.com/Theme-P/TTS-Web-App-2.git
 cd TTS-Web-App
 
 # Build and run
@@ -32,7 +32,7 @@ Open http://localhost:5000 in your browser.
 
 ```bash
 # Clone the repository
-git clone https://github.com/n301ix/TTS-Web-App.git
+git clone https://github.com/Theme-P/TTS-Web-App-2.git
 cd TTS-Web-App
 
 # Install dependencies

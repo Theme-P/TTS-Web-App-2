@@ -131,6 +131,82 @@ select:focus {
     border-color: var(--primary);
 }
 
+/* Speed Control Slider */
+.speed-control {
+    margin-bottom: 15px;
+}
+
+.speed-control label {
+    display: block;
+    margin-bottom: 10px;
+}
+
+.slider-container {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 8px;
+}
+
+.speed-label {
+    font-size: 0.85rem;
+    color: var(--text-muted);
+    min-width: 35px;
+}
+
+#speed-slider {
+    flex: 1;
+    height: 8px;
+    border-radius: 4px;
+    background: linear-gradient(to right, #E3F2FD 0%, var(--primary) 100%);
+    outline: none;
+    appearance: none;
+    -webkit-appearance: none;
+}
+
+#speed-slider::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    background: var(--primary);
+    cursor: pointer;
+    box-shadow: 0 2px 6px rgba(74, 144, 226, 0.4);
+    transition: transform 0.1s;
+}
+
+#speed-slider::-webkit-slider-thumb:hover {
+    transform: scale(1.1);
+}
+
+#speed-slider::-moz-range-thumb {
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    background: var(--primary);
+    cursor: pointer;
+    border: none;
+}
+
+.speed-value {
+    text-align: center;
+}
+
+#speed-display {
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: var(--primary);
+    padding: 4px 12px;
+    background: #E3F2FD;
+    border-radius: 20px;
+}
+
+.tts-badge {
+    background-color: #E8F5E9;
+    color: #2E7D32;
+    margin-left: 8px;
+}
+
 button {
     width: 100%;
     padding: 15px;
