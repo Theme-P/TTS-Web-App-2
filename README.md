@@ -1,6 +1,6 @@
 # 🇹🇭 Thai-Chinese TTS Web App 🇨🇳
 
-A web application that translates Thai text to Chinese and generates speech using Microsoft Edge TTS.
+A web application that translates Thai text to Chinese and generates speech using **MeloTTS**.
 
 ![Python](https://img.shields.io/badge/Python-3.9+-blue.svg)
 ![Flask](https://img.shields.io/badge/Flask-2.3-green.svg)
@@ -9,7 +9,7 @@ A web application that translates Thai text to Chinese and generates speech usin
 ## ✨ Features
 
 - **Hybrid Translation**: Uses `googletrans` (fast) with `deep-translator` fallback (reliable)
-- **Text-to-Speech**: Microsoft Edge TTS with 6 Chinese voice options
+- **Text-to-Speech**: High-quality **MeloTTS** with adjustable speech speed
 - **Modern UI**: Clean, responsive web interface
 - **Docker Ready**: Run anywhere without environment setup
 
@@ -20,7 +20,7 @@ A web application that translates Thai text to Chinese and generates speech usin
 ```bash
 # Clone the repository
 git clone https://github.com/Theme-P/TTS-Web-App-2.git
-cd TTS-Web-App
+cd TTS-Web-App-2
 
 # Build and run
 docker-compose up --build
@@ -33,7 +33,7 @@ Open http://localhost:5000 in your browser.
 ```bash
 # Clone the repository
 git clone https://github.com/Theme-P/TTS-Web-App-2.git
-cd TTS-Web-App
+cd TTS-Web-App-2
 
 # Install dependencies
 pip install -r requirements.txt
@@ -45,10 +45,10 @@ python app.py
 ## 📁 Project Structure
 
 ```
-TTS-Web-App/
+TTS-Web-App-2/
 ├── app.py                  # Flask application
 ├── translation_service.py  # Hybrid translation logic
-├── tts_service.py          # Edge TTS integration
+├── melo_tts_service.py     # MeloTTS integration
 ├── requirements.txt        # Python dependencies
 ├── Dockerfile              # Container definition
 ├── docker-compose.yml      # Service orchestration
@@ -61,16 +61,8 @@ TTS-Web-App/
 
 ## 🔧 Configuration
 
-### Available Voices
-
-| ID | Voice Name | Description |
-|----|------------|-------------|
-| 1 | Xiaoxiao | Female - Warm |
-| 2 | Xiaoyi | Female - Lively |
-| 3 | Yunxia | Female - Cute |
-| 4 | Yunxi | Male - Sunshine |
-| 5 | Yunjian | Male - Passionate |
-| 6 | Yunyang | Male - Professional |
+### Speech Parameters
+- **Speed**: Adjustable from 0.5x to 2.0x (Default: 1.0)
 
 ## 🐳 Docker Hub
 
@@ -86,7 +78,6 @@ docker run -p 5000:5000 n301ix/tts-webapp:latest
 | Endpoint | Method | Description |
 |----------|--------|-------------|
 | `/` | GET | Main web interface |
-| `/api/voices` | GET | List available voices |
 | `/api/convert` | POST | Convert Thai text to Chinese speech |
 
 ## 🤝 Contributing
