@@ -26,7 +26,7 @@ cd TTS-Web-App-2
 docker-compose up --build
 ```
 
-Open http://localhost:5000 in your browser.
+Open http://localhost:5001 in your browser.
 
 ### Local Development
 
@@ -71,7 +71,7 @@ Pull the pre-built image:
 
 ```bash
 docker pull n301ix/tts-webapp:latest
-docker run -p 5000:5000 n301ix/tts-webapp:latest
+docker run -p 5001:5001 n301ix/tts-webapp:latest
 ```
 
 ## 📝 API Endpoints
