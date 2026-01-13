@@ -14,7 +14,7 @@ from googletrans import Translator
 class TranslationService:
     """Hybrid Thai-Chinese Translation Service with Caching"""
     
-    SHORT_TEXT_THRESHOLD = 500
+    SHORT_TEXT_THRESHOLD = 200  # Characters: use googletrans below, deep-translator above
     CACHE_SIZE = 100  # Maximum cached translations
     
     def __init__(self):
