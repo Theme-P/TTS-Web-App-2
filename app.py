@@ -5,6 +5,7 @@ Optimized for reduced resource consumption
 
 import os
 import atexit
+import base64
 from flask import Flask, render_template, request, jsonify
 
 # Import services (now in the same directory)
@@ -16,12 +17,6 @@ app = Flask(__name__)
 # Configure Flask
 app.config['MAX_CONTENT_LENGTH'] = 16 * 1024 * 1024  # 16MB max request size
 app.config['JSON_SORT_KEYS'] = False
-
-# Initialize services lazily
-# Output dir relative to WebApp static folder
-current_dir = os.path.dirname(os.path.abspath(__file__))
-OUTPUT_DIR = os.path.join(current_dir, 'static', 'audio')
-os.makedirs(OUTPUT_DIR, exist_ok=True)
 
 # Services initialized on first use
 _translation_service = None
@@ -40,7 +35,7 @@ def get_tts_service():
     global _tts_service
     if _tts_service is None:
         print("Initializing TTS service (model will load on first request)...")
-        _tts_service = MeloTTSService(output_dir=OUTPUT_DIR)
+        _tts_service = MeloTTSService()
     return _tts_service
 
 def cleanup_services():
@@ -94,14 +89,17 @@ def convert():
 
     # 2. TTS with MeloTTS
     try:
-         filepath = tts_service.generate_speech(chinese_text, speed=speed)
-         filename = os.path.basename(filepath)
+         audio_bytes = tts_service.generate_speech(chinese_text, speed=speed)
+         
+         # Convert audio bytes to base64 data URL
+         audio_base64 = base64.b64encode(audio_bytes).decode('utf-8')
+         audio_data_url = f'data:audio/wav;base64,{audio_base64}'
          
          # Return result
          return jsonify({
              'thai': thai_text,
              'chinese': chinese_text,
-             'audio_url': f'/static/audio/{filename}',
+             'audio_url': audio_data_url,
              'translator': mechanism,
              'tts_engine': 'MeloTTS',
              'speed': speed

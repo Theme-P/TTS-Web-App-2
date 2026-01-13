@@ -6,14 +6,12 @@ Optimized with lazy loading and automatic cleanup
 
 import os
 import sys
-import time
-import threading
+import io
 from pathlib import Path
 
 # Fix OpenMP conflict on Windows
 os.environ['KMP_DUPLICATE_LIB_OK'] = 'TRUE'
 
-from datetime import datetime, timedelta
 from typing import Dict, Optional, List
 
 from melo.api import TTS
@@ -22,36 +20,20 @@ from melo.api import TTS
 class MeloTTSService:
     """Chinese Text-to-Speech Service using MeloTTS with Lazy Loading"""
     
-    # Cleanup configuration
-    CLEANUP_INTERVAL_SECONDS = 3600  # 1 hour
-    MAX_FILE_AGE_SECONDS = 3600  # 1 hour
-    
-    def __init__(self, output_dir: str = 'output', device: str = 'auto', auto_cleanup: bool = True):
+    def __init__(self, device: str = 'auto'):
         """
         Initialize MeloTTS service
         
         Args:
-            output_dir: Directory to save audio files
             device: 'auto', 'cpu', 'cuda', or 'mps'
-            auto_cleanup: Enable automatic cleanup of old audio files
         """
-        self.output_dir = output_dir
         self.device = device
-        os.makedirs(output_dir, exist_ok=True)
         
         # Lazy initialization
         self._model = None
         self._speaker_ids = None
         self._speakers = None
         self._voices = None
-        
-        # Cleanup thread
-        self._cleanup_enabled = auto_cleanup
-        self._cleanup_thread = None
-        self._stop_cleanup = threading.Event()
-        
-        if self._cleanup_enabled:
-            self._start_cleanup_thread()
     
     @property
     def model(self):
@@ -120,7 +102,7 @@ class MeloTTSService:
             _ = self.model
         return choice in self._voices
     
-    def generate_speech(self, text: str, speed: float = 1.0) -> str:
+    def generate_speech(self, text: str, speed: float = 1.0) -> bytes:
         """
         Generate speech from Chinese text using MeloTTS.
         
@@ -129,7 +111,7 @@ class MeloTTSService:
             speed: Speech speed (0.5-2.0)
         
         Returns:
-            filepath to generated audio (WAV format)
+            Audio data as bytes (WAV format)
         """
         if not text.strip():
             raise TTSError("Text cannot be empty")
@@ -140,81 +122,38 @@ class MeloTTSService:
         # Use first (and only) Chinese speaker
         speaker_id = self._speaker_ids[self._speakers[0]]
         
-        # Generate filename
-        timestamp = datetime.now().strftime("%Y%m%d_%H%M%S_%f")
-        filename = f"melo_tts_{timestamp}.wav"
-        filepath = os.path.join(self.output_dir, filename)
-        
+        # Create temporary file in memory
+        import tempfile
         try:
-            # Generate speech with MeloTTS
+            # Create a temporary file to capture MeloTTS output
+            with tempfile.NamedTemporaryFile(suffix='.wav', delete=False) as tmp_file:
+                tmp_path = tmp_file.name
+            
+            # Generate speech with MeloTTS to temp file
             model.tts_to_file(
                 text=text,
                 speaker_id=speaker_id,
-                output_path=filepath,
+                output_path=tmp_path,
                 speed=speed,
                 quiet=True
             )
-            return filepath
+            
+            # Read the audio file into memory
+            with open(tmp_path, 'rb') as f:
+                audio_bytes = f.read()
+            
+            # Clean up temp file
+            os.unlink(tmp_path)
+            
+            return audio_bytes
         except Exception as e:
+            # Clean up temp file on error
+            if 'tmp_path' in locals() and os.path.exists(tmp_path):
+                os.unlink(tmp_path)
             raise TTSError(f"Failed to generate speech: {e}")
-    
-    def get_file_size_kb(self, filepath: str) -> float:
-        """Get file size in KB"""
-        return os.path.getsize(filepath) / 1024
-    
-    def _cleanup_old_files(self):
-        """Remove audio files older than MAX_FILE_AGE_SECONDS"""
-        try:
-            now = time.time()
-            audio_dir = Path(self.output_dir)
-            
-            if not audio_dir.exists():
-                return
-            
-            removed_count = 0
-            for audio_file in audio_dir.glob("*.wav"):
-                try:
-                    file_age = now - audio_file.stat().st_mtime
-                    if file_age > self.MAX_FILE_AGE_SECONDS:
-                        audio_file.unlink()
-                        removed_count += 1
-                except Exception as e:
-                    print(f"Error removing file {audio_file}: {e}")
-            
-            if removed_count > 0:
-                print(f"Cleaned up {removed_count} old audio files")
-        except Exception as e:
-            print(f"Error during cleanup: {e}")
-    
-    def _cleanup_worker(self):
-        """Background worker for periodic cleanup"""
-        while not self._stop_cleanup.is_set():
-            self._cleanup_old_files()
-            # Wait with ability to interrupt
-            self._stop_cleanup.wait(self.CLEANUP_INTERVAL_SECONDS)
-    
-    def _start_cleanup_thread(self):
-        """Start background cleanup thread"""
-        if self._cleanup_thread is None or not self._cleanup_thread.is_alive():
-            self._stop_cleanup.clear()
-            self._cleanup_thread = threading.Thread(target=self._cleanup_worker, daemon=True)
-            self._cleanup_thread.start()
-            print("Started automatic audio file cleanup")
-    
-    def stop_cleanup(self):
-        """Stop background cleanup thread"""
-        if self._cleanup_thread and self._cleanup_thread.is_alive():
-            self._stop_cleanup.set()
-            self._cleanup_thread.join(timeout=2)
-            print("Stopped automatic audio file cleanup")
-    
-    def cleanup_now(self):
-        """Manually trigger cleanup"""
-        self._cleanup_old_files()
     
     def shutdown(self):
         """Cleanup resources"""
-        self.stop_cleanup()
         # Clear model from memory
         self._model = None
         self._speaker_ids = None
