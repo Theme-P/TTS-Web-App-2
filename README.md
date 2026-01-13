@@ -10,6 +10,7 @@ A web application that translates Thai text to Chinese and generates speech usin
 
 - **Hybrid Translation**: Uses `googletrans` (fast) with `deep-translator` fallback (reliable)
 - **Text-to-Speech**: High-quality **MeloTTS** with adjustable speech speed
+- **MP3 Audio Output**: Automatic WAV to MP3 conversion using pydub (smaller file size)
 - **Modern UI**: Clean, responsive web interface
 - **Docker Ready**: Run anywhere without environment setup
 
@@ -39,6 +40,11 @@ cd Thai-To-Chinese-TTS
 pip install -r requirements.txt
 python -m unidic download
 
+# Install ffmpeg for MP3 conversion (required)
+# Windows: choco install ffmpeg  OR  conda install ffmpeg
+# Linux: sudo apt-get install ffmpeg
+# macOS: brew install ffmpeg
+
 # Run the application
 python app.py
 ```
@@ -64,6 +70,7 @@ Thai-To-Chinese-TTS/
 
 ### Speech Parameters
 - **Speed**: Adjustable from 0.5x to 2.0x (Default: 1.0)
+- **Audio Format**: MP3 (192kbps) with WAV fallback if ffmpeg unavailable
 
 ## 🐳 Docker Hub
 
@@ -80,6 +87,20 @@ docker run -p 5001:5001 n301ix/tts-webapp:latest
 |----------|--------|-------------|
 | `/` | GET | Main web interface |
 | `/api/convert` | POST | Convert Thai text to Chinese speech |
+| `/api/health` | GET | Health check endpoint |
+
+### `/api/convert` Response
+
+```json
+{
+  "thai": "สวัสดี",
+  "chinese": "你好",
+  "audio_url": "data:audio/mpeg;base64,...",
+  "audio_format": "mp3",
+  "translator": "googletrans",
+  "tts_engine": "MeloTTS",
+  "speed": 1.0
+}
 
 ## 🤝 Contributing
 
